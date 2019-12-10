@@ -33,10 +33,12 @@ shinyServer(function(input, output) {
 # Date Filtering ----------------------------------------------------------
 
   date_fil <- reactive({
+
+    range_fil <- input$date_fil
     
-    dt %>% 
-      filter(REQ_DATE >= input$start_fil, REQ_DATE <= input$end_fil)
-    
+    dt %>%
+      filter(REQ_DATE >= range_fil[1], REQ_DATE <= range_fil[2])
+
   })
   
 # Filtering base on accuracy case -----------------------------------------
@@ -49,50 +51,73 @@ shinyServer(function(input, output) {
       
     } else if(input$fil_sel == "Proper forecast") {
       
+      # date_fil() %>% 
+      #   filter(accuracy == 100, STOCK_ON_HAND_AMT > 0)
+      
       date_fil() %>% 
-        filter(accuracy == 1, STOCK_ON_HAND_AMT > 0)
+        filter(accuracy == 100)
       
     } else if(input$fil_sel == "Under forecast") {
       
       date_fil() %>% 
-        filter(accuracy > 1, STOCK_ON_HAND_AMT > 0) %>% 
+        filter(accuracy > 100) %>% 
         arrange(desc(accuracy))
       
     } else if(input$fil_sel == "Over forecast") {
       
       date_fil() %>% 
-        filter(accuracy < 1) %>% 
+        filter(accuracy < 100) %>% 
         arrange(desc(accuracy))
       
     } else if (input$fil_sel == "Uncertainty") {
       
-      date_fil() %>% 
-        filter(accuracy == 1, STOCK_ON_HAND_AMT == 0)
+      # date_fil() %>% 
+      #   filter(accuracy == 1, STOCK_ON_HAND_AMT == 0)
       
     }
     
   })
+
+# Model filtering ---------------------------------------------------------
+
+  model_input <- reactive({
+    
+    user_input() %>% 
+      filter(PRODUCT_NAME %in% input$model_fil)
+    
+  })  
   
 # Plot histogram ----------------------------------------------------------
 
   output$his_acc <- renderPlot({
     
-    user_input() %>% 
+    model_input() %>% 
       ggplot(aes(x = accuracy)) + 
-      geom_histogram(binwidth = 1, color = "grey35", fill = "coral2", alpha = 0.7) + 
+      geom_histogram(binwidth = 25, color = "white", fill = "coral2", alpha = 0.7) + 
       ylab("HS forecast records") +
-      xlab("Distribution of accuracy") +
+      xlab("Distribution of accuracy (%)") +
       theme_minimal() +
       theme(text = element_text(size = 15)) +
-      scale_x_continuous(limits = c(0,25))
+      scale_x_continuous(limits = c(0,300))
     
+  })
+  
+  output$his_res <- renderPlot({
+    model_input() %>% 
+      ggplot(aes(x = SKU_error)) + 
+      geom_histogram(binwidth = 1, color = "white", fill = "coral2", alpha = 0.7) + 
+      ylab("HS forecast records") +
+      xlab("Distribution of Forecast error (SKU)") +
+      theme_minimal() +
+      theme(text = element_text(size = 15)) +
+      scale_x_continuous(limits = c(-10,10))
   })
 
 # Data table output -------------------------------------------------------
 
   output$details <- DT::renderDataTable({
     
-    user_input() %>% 
+    model_input() %>% 
       select(-START_DATE, -END_DATE) %>% 
       DT::datatable()
     
@@ -104,7 +129,7 @@ shinyServer(function(input, output) {
     
     valueBox(
       tags$p(paste(start_date, "to", end_date), style = "font-size: 40%;"), 
-      "Sales Period",
+      "Sales Period Coverage",
       color = "green", icon = icon("calendar")
     )
   })

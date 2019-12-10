@@ -1,6 +1,6 @@
 Group,Desc
-All data,All original data
-Proper forecast,Filter for the proper forecast
-Under forecast,Filter for the under forecast
-Over forecast,Filter for the over forecast
-Uncertainty,Filter for the uncertain case
+All data,Data without any accuracy criteria
+Proper forecast,100% Accuracy (Some criteria is TBC)
+Under forecast,Accuracy > 100% which determine ML Forecast < Sale amount (Request later by shops)
+Over forecast,Accuracy < 100% which determine ML Forecast > Sale amount
+Uncertainty,(To be confirmed)

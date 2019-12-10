@@ -10,8 +10,9 @@
 
 # Define available period -------------------------------------------------
 
-start_list <- as.character(sort(unique(dt$REQ_DATE)))
-end_list <- as.character(sort(unique(dt$REQ_DATE)))
+start_list <- as.character(head(sort(unique(dt$REQ_DATE)), 1))
+end_list <- as.character(tail(sort(unique(dt$REQ_DATE)), 1))
+model_list <- unique(sort(dt$PRODUCT_NAME))
 
 # UI layout ---------------------------------------------------------------
 
@@ -27,11 +28,17 @@ shinyUI(
 
                 dashboardSidebar(
                   
-                  selectInput(inputId = "start_fil", label = h3("Select Start date"), 
-                              choices = as.list(start_list)), 
+                  dateRangeInput(inputId = "date_fil", label = h3("Forecast Range"), 
+                              start = start_list, end = end_list, 
+                              min = start_list, max = end_list), 
                   
-                  selectInput(inputId = "end_fil", label = h3("Select End date"), selected = tail(end_list, 1),
-                              choices = as.list(end_list)),
+                  pickerInput(inputId = "model_fil", label = h3("Model Selection"),
+                              choices = as.list(model_list), 
+                              selected = model_list,
+                              options = list(`live-search` = T,
+                                             `actions-box` = T),
+                              multiple = T
+                              ),
                   
                   selectInput(inputId = "fil_sel", label = h3("Filter criteria"),
                               choices = as.list(menu_fil$Group)), 
@@ -50,16 +57,19 @@ shinyUI(
                   fluidRow(
                     
                   # Value box  
-                    column(width = 4,
+                    column(width = 2,
                            valueBoxOutput(outputId = "period", width = NULL),
                            valueBoxOutput(outputId = "no_record", width = NULL),
                            valueBoxOutput(outputId = "Mean_acc", width = NULL)),
                     
                     # Histogram
-                    column(width = 8,
-                           box(title = "Error Histogram", solidHeader = T, status = "warning", width = NULL,
-                               plotOutput("his_acc", height = 300)))
-                    
+                    column(width = 5,
+                           box(title = "Accuracy Histogram", solidHeader = T, status = "danger", width = NULL,
+                               plotOutput("his_acc", height = 300))), 
+
+                    column(width = 5,
+                           box(title = "Residuals Histogram", solidHeader = T, status = "danger", width = NULL,
+                               plotOutput("his_res", height = 300)))
                   ),
                   
                   fluidRow(
