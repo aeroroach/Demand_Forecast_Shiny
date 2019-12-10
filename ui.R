@@ -7,24 +7,6 @@
 #    http://shiny.rstudio.com/
 #
 
-
-# Library loading ---------------------------------------------------------
-
-library(shiny)
-library(shinydashboard)
-library(tidyverse)
-library(DT)
-
-menu_fil <- read_csv("filter_list.csv")
-dt <- read_csv("input/report_check_sinc1OCT19.csv")
-
-# Data Preparation --------------------------------------------------------
-
-dt %>% 
-  select(START_DATE, END_DATE) %>% 
-  mutate(START_DATE = dmy(START_DATE), 
-         END_DATE = dmy(END_DATE)) -> dt
-
 # UI layout ---------------------------------------------------------------
 
 shinyUI(
