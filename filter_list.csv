@@ -1,0 +1,6 @@
+Group,Desc
+All data,All original data
+Proper forecast,Filter for the proper forecast
+Under forecast,Filter for the under forecast
+Over forecast,Filter for the over forecast
+Uncertainty,Filter for the uncertain case
