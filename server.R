@@ -32,7 +32,12 @@ shinyServer(function(input, output) {
 
 # Date Filtering ----------------------------------------------------------
 
-  
+  date_fil <- reactive({
+    
+    dt %>% 
+      filter(REQ_DATE >= input$start_fil, REQ_DATE <= input$end_fil)
+    
+  })
   
 # Filtering base on accuracy case -----------------------------------------
 
@@ -40,28 +45,28 @@ shinyServer(function(input, output) {
     
     if(input$fil_sel == "All data") {
       
-      dt
+      date_fil()
       
     } else if(input$fil_sel == "Proper forecast") {
       
-      dt %>% 
+      date_fil() %>% 
         filter(accuracy == 1, STOCK_ON_HAND_AMT > 0)
       
     } else if(input$fil_sel == "Under forecast") {
       
-      dt %>% 
+      date_fil() %>% 
         filter(accuracy > 1, STOCK_ON_HAND_AMT > 0) %>% 
         arrange(desc(accuracy))
       
     } else if(input$fil_sel == "Over forecast") {
       
-      dt %>% 
+      date_fil() %>% 
         filter(accuracy < 1) %>% 
         arrange(desc(accuracy))
       
     } else if (input$fil_sel == "Uncertainty") {
       
-      dt %>% 
+      date_fil() %>% 
         filter(accuracy == 1, STOCK_ON_HAND_AMT == 0)
       
     }

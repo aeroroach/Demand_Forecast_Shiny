@@ -7,6 +7,12 @@
 #    http://shiny.rstudio.com/
 #
 
+
+# Define available period -------------------------------------------------
+
+start_list <- as.character(sort(unique(dt$REQ_DATE)))
+end_list <- as.character(sort(unique(dt$REQ_DATE)))
+
 # UI layout ---------------------------------------------------------------
 
 shinyUI(
@@ -20,6 +26,13 @@ shinyUI(
 # Side bar ----------------------------------------------------------------
 
                 dashboardSidebar(
+                  
+                  selectInput(inputId = "start_fil", label = h3("Select Start date"), 
+                              choices = as.list(start_list)), 
+                  
+                  selectInput(inputId = "end_fil", label = h3("Select End date"), selected = tail(end_list, 1),
+                              choices = as.list(end_list)),
+                  
                   selectInput(inputId = "fil_sel", label = h3("Filter criteria"),
                               choices = as.list(menu_fil$Group)), 
                   
