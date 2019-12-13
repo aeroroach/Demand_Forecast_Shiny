@@ -12,7 +12,7 @@ end_date <- sort(dt$END_DATE, decreasing = T)[1]
 
 shinyServer(function(input, output) {
 
-# Description of filter criteria -----------------------------------------------------------
+# Description of filter menu -----------------------------------------------------------
 
   fil_input <- reactive({
     
@@ -28,7 +28,16 @@ shinyServer(function(input, output) {
     tmp_txt
     
   })
+  
 
+# Minimum Forecast filtering ----------------------------------------------
+
+  min_fil <- reactive({
+    
+    dt %>% 
+      filter(FORECAST_SALE_AMT > input$fil_min)
+    
+  })
 
 # Date Filtering ----------------------------------------------------------
 
@@ -36,7 +45,7 @@ shinyServer(function(input, output) {
 
     range_fil <- input$date_fil
     
-    dt %>%
+    min_fil() %>%
       filter(REQ_DATE >= range_fil[1], REQ_DATE <= range_fil[2])
 
   })
@@ -50,9 +59,6 @@ shinyServer(function(input, output) {
       date_fil()
       
     } else if(input$fil_sel == "Proper forecast") {
-      
-      # date_fil() %>% 
-      #   filter(accuracy == 100, STOCK_ON_HAND_AMT > 0)
       
       date_fil() %>% 
         filter(accuracy == 100)
@@ -69,12 +75,7 @@ shinyServer(function(input, output) {
         filter(accuracy < 100) %>% 
         arrange(desc(accuracy))
       
-    } else if (input$fil_sel == "Uncertainty") {
-      
-      # date_fil() %>% 
-      #   filter(accuracy == 1, STOCK_ON_HAND_AMT == 0)
-      
-    }
+    } 
     
   })
 
@@ -118,8 +119,8 @@ shinyServer(function(input, output) {
   output$details <- DT::renderDataTable({
     
     model_input() %>% 
-      select(-START_DATE, -END_DATE) %>% 
-      DT::datatable()
+      select(-STOCK_ON_HAND_AMT, -START_DATE, -END_DATE) %>% 
+      DT::datatable(colnames = c("Location", "Model", "Forecast", "Actual", "Accuracy", "Error", "Mat Code", "Req. Date"))
     
   })
 

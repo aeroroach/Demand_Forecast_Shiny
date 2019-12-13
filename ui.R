@@ -32,6 +32,9 @@ shinyUI(
                               start = start_list, end = end_list, 
                               min = start_list, max = end_list), 
                   
+                  sliderInput("fil_min", label = h3("Min. Exclude"), min = 0, 
+                              max = 10, value = 3),
+                  
                   pickerInput(inputId = "model_fil", label = h3("Model Selection"),
                               choices = as.list(model_list), 
                               selected = model_list,
