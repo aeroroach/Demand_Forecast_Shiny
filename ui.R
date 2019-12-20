@@ -32,7 +32,14 @@ shinyUI(
                               start = start_list, end = end_list, 
                               min = start_list, max = end_list), 
                   
-                  sliderInput("fil_min", label = h3("Min. Exclude"), min = 0, 
+                  materialSwitch(
+                    inputId = "full_switch",
+                    label = "Full Range", 
+                    status = "success",
+                    right = TRUE
+                  ),
+                  
+                  sliderInput("fil_min", label = h3("Min. Exclude"), min = 1, 
                               max = 10, value = 3),
                   
                   pickerInput(inputId = "model_fil", label = h3("Model Selection"),
@@ -61,9 +68,9 @@ shinyUI(
                     
                   # Value box  
                     column(width = 2,
-                           valueBoxOutput(outputId = "period", width = NULL),
                            valueBoxOutput(outputId = "no_record", width = NULL),
-                           valueBoxOutput(outputId = "Mean_acc", width = NULL)),
+                           valueBoxOutput(outputId = "Mean_acc", width = NULL), 
+                           valueBoxOutput(outputId = "Mean_err", width = NULL)),
                     
                     # Histogram
                     column(width = 5,

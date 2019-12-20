@@ -7,9 +7,6 @@
 #    http://shiny.rstudio.com/
 #
 
-start_date <- sort(dt$START_DATE)[1]
-end_date <- sort(dt$END_DATE, decreasing = T)[1]
-
 shinyServer(function(input, output) {
 
 # Description of filter menu -----------------------------------------------------------
@@ -29,13 +26,27 @@ shinyServer(function(input, output) {
     
   })
   
+  
+# Choosing between full range or buffer -----------------------------------
+
+  fil_full <- reactive({
+    
+    if(input$full_switch) {
+      
+      dt_full
+      
+    } else {
+      dt_buff
+    }
+    
+  })
 
 # Minimum Forecast filtering ----------------------------------------------
 
   min_fil <- reactive({
     
-    dt %>% 
-      filter(FORECAST_SALE_AMT > input$fil_min)
+    fil_full() %>% 
+      filter(FORECAST_SALE_AMT >= input$fil_min)
     
   })
 
@@ -61,19 +72,19 @@ shinyServer(function(input, output) {
     } else if(input$fil_sel == "Proper forecast") {
       
       date_fil() %>% 
-        filter(accuracy == 100)
+        filter(prop_error >= -20, prop_error <= 20)
       
     } else if(input$fil_sel == "Under forecast") {
       
       date_fil() %>% 
-        filter(accuracy > 100) %>% 
-        arrange(desc(accuracy))
+        filter(prop_error < -20) %>% 
+        arrange(prop_error)
       
     } else if(input$fil_sel == "Over forecast") {
       
       date_fil() %>% 
-        filter(accuracy < 100) %>% 
-        arrange(desc(accuracy))
+        filter(prop_error > 20) %>% 
+        arrange(desc(prop_error))
       
     } 
     
@@ -93,13 +104,13 @@ shinyServer(function(input, output) {
   output$his_acc <- renderPlot({
     
     model_input() %>% 
-      ggplot(aes(x = accuracy)) + 
+      ggplot(aes(x = prop_error)) + 
       geom_histogram(binwidth = 25, color = "white", fill = "coral2", alpha = 0.7) + 
       ylab("HS forecast records") +
-      xlab("Distribution of accuracy (%)") +
+      xlab("Distribution of Forecast error (%)") +
       theme_minimal() +
       theme(text = element_text(size = 15)) +
-      scale_x_continuous(limits = c(0,300))
+      scale_x_continuous(limits = c(-200,200))
     
   })
   
@@ -119,21 +130,12 @@ shinyServer(function(input, output) {
   output$details <- DT::renderDataTable({
     
     model_input() %>% 
-      select(-STOCK_ON_HAND_AMT, -START_DATE, -END_DATE) %>% 
-      DT::datatable(colnames = c("Location", "Model", "Forecast", "Actual", "Accuracy", "Error", "Mat Code", "Req. Date"))
+      select(-START_DATE, -END_DATE) %>% 
+      DT::datatable(colnames = c("Location", "Model", "Forecast", "Actual", "% Error", "Error", "Mat Code", "Req. Date"))
     
   })
 
 # Value Box ---------------------------------------------------------------
-  
-  output$period <- renderValueBox({
-    
-    valueBox(
-      tags$p(paste(start_date, "to", end_date), style = "font-size: 40%;"), 
-      "Sales Period Coverage",
-      color = "green", icon = icon("calendar")
-    )
-  })
   
   output$no_record <- renderValueBox({
     
@@ -150,12 +152,24 @@ shinyServer(function(input, output) {
   output$Mean_acc <- renderValueBox({
     
     tmp <- user_input()
-    M_acc <- mean(tmp$accuracy)
+    M_acc <- mean(tmp$prop_error)
     
     valueBox(
       round(M_acc, digits = 3), 
-      "Mean Accuracy",
-      color = "green", icon = icon("check-circle")
+      "Mean % Error",
+      color = "red", icon = icon("check-circle")
+    )
+  })
+  
+  output$Mean_err <- renderValueBox({
+    
+    tmp <- user_input()
+    M_err <- mean(tmp$SKU_error)
+    
+    valueBox(
+      round(M_err, digits = 3), 
+      "Mean SKU error",
+      color = "red", icon = icon("check-circle")
     )
   })
   
