@@ -131,7 +131,8 @@ shinyServer(function(input, output) {
     
     model_input() %>% 
       select(-START_DATE, -END_DATE) %>% 
-      DT::datatable(colnames = c("Location", "Model", "Forecast", "Actual", "% Error", "Error", "Mat Code", "Req. Date"))
+      DT::datatable(colnames = c("Location", "Model", "Forecast", "Actual", "% Error", "Error", "Mat Code", "Req. Date"), 
+                    filter = list(position = "top"))
     
   })
 

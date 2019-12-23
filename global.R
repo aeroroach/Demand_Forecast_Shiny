@@ -16,7 +16,8 @@ dt %>%
          START_DATE = dmy(START_DATE), 
          END_DATE = dmy(END_DATE), 
          SALE_AMT_4DAY_AFTER = ifelse(is.na(SALE_AMT_4DAY_AFTER),0,SALE_AMT_4DAY_AFTER), 
-         SALE_AMT = ifelse(is.na(SALE_AMT),0,SALE_AMT))  -> dt
+         SALE_AMT = ifelse(is.na(SALE_AMT),0,SALE_AMT), 
+       LOCATION_CODE = as.character(LOCATION_CODE))  -> dt
 
 dt %>% 
   mutate(prop_error = round((FORECAST_SALE_AMT - SALE_AMT)/FORECAST_SALE_AMT*100, digits = 3),
