@@ -8,7 +8,7 @@ library(tidyverse)
 library(DT)
 
 menu_fil <- read_csv("filter_list.csv")
-dt <- read_csv("input/report_check_sinc1OCT19_add_3_4.csv")
+dt <- read_csv("input/report_check_sinc1NOV19_add_3_4_update26DEC.csv")
 
 dt %>% 
   filter(FORECAST_SALE_AMT > 0) %>% 

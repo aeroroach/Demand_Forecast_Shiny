@@ -10,8 +10,8 @@
 
 # Define available period -------------------------------------------------
 
-start_list <- as.character(head(sort(unique(dt$REQ_DATE)), 1))
-end_list <- as.character(tail(sort(unique(dt$REQ_DATE)), 1))
+start_list <- as.character(head(sort(unique(dt$START_DATE)), 1))
+end_list <- as.character(tail(sort(unique(dt$END_DATE)), 1))
 model_list <- unique(sort(dt$PRODUCT_NAME))
 
 # UI layout ---------------------------------------------------------------
@@ -74,7 +74,7 @@ shinyUI(
                     
                     # Histogram
                     column(width = 5,
-                           box(title = "Accuracy Histogram", solidHeader = T, status = "danger", width = NULL,
+                           box(title = "% Error Histogram", solidHeader = T, status = "danger", width = NULL,
                                plotOutput("his_acc", height = 300))), 
 
                     column(width = 5,
