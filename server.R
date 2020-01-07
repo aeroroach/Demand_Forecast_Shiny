@@ -61,61 +61,61 @@ shinyServer(function(input, output) {
 
   })
   
+# Model filtering ---------------------------------------------------------
+  
+  model_input <- reactive({
+    
+    date_fil() %>% 
+      filter(PRODUCT_NAME %in% input$model_fil)
+    
+  })  
+  
 # Filtering base on accuracy case -----------------------------------------
 
   user_input <- reactive({
     
     if(input$fil_sel == "All data") {
       
-      date_fil()
+      model_input()
       
     } else if(input$fil_sel == "Proper forecast") {
       
-      date_fil() %>% 
-        filter(prop_error >= -20, prop_error <= 20)
+      model_input() %>% 
+        filter(prop_error >= -40, prop_error <= 40)
       
     } else if(input$fil_sel == "Under forecast") {
       
-      date_fil() %>% 
-        filter(prop_error < -20) %>% 
+      model_input() %>% 
+        filter(prop_error < -40) %>% 
         arrange(prop_error)
       
     } else if(input$fil_sel == "Over forecast") {
       
-      date_fil() %>% 
-        filter(prop_error > 20) %>% 
+      model_input() %>% 
+        filter(prop_error > 40) %>% 
         arrange(desc(prop_error))
       
     } 
     
   })
-
-# Model filtering ---------------------------------------------------------
-
-  model_input <- reactive({
-    
-    user_input() %>% 
-      filter(PRODUCT_NAME %in% input$model_fil)
-    
-  })  
   
 # Plot histogram ----------------------------------------------------------
 
   output$his_acc <- renderPlot({
     
-    model_input() %>% 
+    user_input() %>% 
       ggplot(aes(x = prop_error)) + 
       geom_histogram(binwidth = 25, color = "white", fill = "coral2", alpha = 0.7) + 
       ylab("HS forecast records") +
       xlab("Distribution of Forecast error (%)") +
       theme_minimal() +
       theme(text = element_text(size = 15)) +
-      scale_x_continuous(limits = c(-200,200))
+      scale_x_continuous(limits = c(-200,100))
     
   })
   
   output$his_res <- renderPlot({
-    model_input() %>% 
+    user_input() %>% 
       ggplot(aes(x = SKU_error)) + 
       geom_histogram(binwidth = 1, color = "white", fill = "coral2", alpha = 0.7) + 
       ylab("HS forecast records") +
@@ -129,7 +129,7 @@ shinyServer(function(input, output) {
 
   output$details <- DT::renderDataTable({
     
-    model_input() %>% 
+    user_input() %>% 
       select(-START_DATE, -END_DATE) %>% 
       DT::datatable(colnames = c("Location", "Model", "Forecast", "Actual", "% Error", "Error", "Mat Code", "Req. Date"), 
                     filter = list(position = "top"))
@@ -164,13 +164,13 @@ shinyServer(function(input, output) {
   
   output$Mean_err <- renderValueBox({
     
-    tmp <- user_input()
-    M_err <- mean(tmp$SKU_error)
+    n_base <- nrow(model_input())
+    prop_acc <- nrow(user_input())
     
     valueBox(
-      round(M_err, digits = 3), 
-      "Mean SKU error",
-      color = "red", icon = icon("check-circle")
+      round(prop_acc/n_base*100, digits = 3), 
+      "% of group",
+      color = "green", icon = icon("percent")
     )
   })
   
@@ -188,6 +188,5 @@ shinyServer(function(input, output) {
     }
     
   )
-  
   
 })

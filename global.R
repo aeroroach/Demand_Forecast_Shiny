@@ -11,7 +11,7 @@ menu_fil <- read_csv("filter_list.csv")
 dt <- read_csv("input/report_check_sinc1NOV19_add_3_4_update26DEC.csv")
 
 dt %>% 
-  filter(FORECAST_SALE_AMT > 0) %>% 
+  filter(FORECAST_SALE_AMT > 0 , STOCK_ON_HAND_AMT > 0, SALE_AMT > 0, SALE_AMT_4DAY_AFTER > 0) %>% 
   mutate(REQ_DATE = dmy(REQ_DATE),
          START_DATE = dmy(START_DATE), 
          END_DATE = dmy(END_DATE), 
