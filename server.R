@@ -28,16 +28,17 @@ shinyServer(function(input, output) {
   
   
 # Choosing between full range or buffer -----------------------------------
-
-  fil_full <- reactive({
+  fil_pois <- reactive({
     
-    if(input$full_switch) {
-      
-      dt_full
-      
-    } else {
-      dt_buff
-    }
+    qpois_sel <- input$qpois_select
+    
+    dt %>% 
+      mutate(qpois_lambda = qpois(qpois_sel, sum_lambda)) %>% 
+      mutate(prop_error = round((qpois_lambda - SALE_AMT)/qpois_lambda*100, digits = 3),
+             SKU_error = qpois_lambda - SALE_AMT) %>%
+      select(LOCATION_CODE, PRODUCT_NAME, COLOR, qpois_lambda, SALE_AMT,
+             prop_error, SKU_error,
+             REQ_DATE, START_DATE, END_DATE)
     
   })
 
@@ -45,8 +46,8 @@ shinyServer(function(input, output) {
 
   min_fil <- reactive({
     
-    fil_full() %>% 
-      filter(FORECAST_SALE_AMT >= input$fil_min)
+    fil_pois() %>% 
+      filter(qpois_lambda >= input$fil_min)
     
   })
 

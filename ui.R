@@ -32,12 +32,8 @@ shinyUI(
                               start = start_list, end = end_list, 
                               min = start_list, max = end_list), 
                   
-                  materialSwitch(
-                    inputId = "full_switch",
-                    label = "Full Range", 
-                    status = "success",
-                    right = TRUE
-                  ),
+                  sliderInput("qpois_select", label = h3("Poisson Conf"), min = 0.50, 
+                              max = 0.99, value = 0.95, step = 0.05),
                   
                   sliderInput("fil_min", label = h3("Min. Exclude"), min = 1, 
                               max = 10, value = 3),
