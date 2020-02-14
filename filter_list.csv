@@ -1,5 +1,5 @@
 Group,Desc
-All data,Data without any accuracy criteria
-Proper forecast,Filter only 100% Accuracy
-Under forecast,Accuracy > 100% which determine ML Forecast < Sale amount
-Over forecast,Accuracy < 100% which determine ML Forecast > Sale amount
+All data,Data without any error criteria
+Proper forecast,Filtering only -40% <= %Error <= 40%
+Under forecast,Filtering only %Error < -40%
+Over forecast,Filtering only %Error > 40%
