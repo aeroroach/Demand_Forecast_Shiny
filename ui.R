@@ -32,6 +32,13 @@ shinyUI(
                               start = start_list, end = end_list, 
                               min = start_list, max = end_list), 
                   
+                  materialSwitch(
+                    inputId = "bau_switch",
+                    label = "New Sandbox", 
+                    status = "success",
+                    right = F
+                  ),
+                  
                   sliderInput("qpois_select", label = h3("Poisson Conf"), min = 0.50, 
                               max = 0.99, value = 0.95, step = 0.05),
                   
@@ -74,7 +81,7 @@ shinyUI(
                                plotOutput("his_acc", height = 300))), 
 
                     column(width = 5,
-                           box(title = "Residuals Histogram", solidHeader = T, status = "danger", width = NULL,
+                           box(title = "SKU Error Histogram", solidHeader = T, status = "danger", width = NULL,
                                plotOutput("his_res", height = 300)))
                   ),
                   

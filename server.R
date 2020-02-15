@@ -30,15 +30,23 @@ shinyServer(function(input, output) {
 # Choosing between full range or buffer -----------------------------------
   fil_pois <- reactive({
     
-    qpois_sel <- input$qpois_select
-    
-    dt %>% 
-      mutate(qpois_lambda = qpois(qpois_sel, sum_lambda)) %>% 
-      mutate(prop_error = round((qpois_lambda - SALE_AMT)/qpois_lambda*100, digits = 3),
-             SKU_error = qpois_lambda - SALE_AMT) %>%
-      select(LOCATION_CODE, PRODUCT_NAME, COLOR, qpois_lambda, SALE_AMT,
-             prop_error, SKU_error,
-             REQ_DATE, START_DATE, END_DATE)
+    if (input$bau_switch == T) {
+      
+      qpois_sel <- input$qpois_select
+      
+      dt %>% 
+        mutate(qpois_lambda = qpois(qpois_sel, sum_lambda)) %>% 
+        mutate(prop_error = round((qpois_lambda - SALE_AMT)/qpois_lambda*100, digits = 3),
+               SKU_error = qpois_lambda - SALE_AMT) %>%
+        select(LOCATION_CODE, PRODUCT_NAME, COLOR, qpois_lambda, SALE_AMT,
+               prop_error, SKU_error,
+               REQ_DATE, START_DATE, END_DATE)
+      
+    } else {
+      
+      dt_bau
+        
+    }
     
   })
 
@@ -46,8 +54,17 @@ shinyServer(function(input, output) {
 
   min_fil <- reactive({
     
-    fil_pois() %>% 
-      filter(qpois_lambda >= input$fil_min)
+    if (input$bau_switch == T) {
+      
+      fil_pois() %>% 
+        filter(qpois_lambda >= input$fil_min)
+      
+    }else {
+     
+      fil_pois() %>% 
+        filter(FORECAST_SALE_AMT >= input$fil_min)
+       
+    }
     
   })
 
@@ -132,7 +149,8 @@ shinyServer(function(input, output) {
     
     user_input() %>% 
       select(-START_DATE, -END_DATE) %>% 
-      DT::datatable(colnames = c("Location", "Model", "Forecast", "Actual", "% Error", "Error", "Mat Code", "Req. Date"), 
+      DT::datatable(colnames = c("Location", "Model", "Color", "Forecast", "Actual", "% Error", 
+                                 "Error", "Req. Date"), 
                     filter = list(position = "top"))
     
   })

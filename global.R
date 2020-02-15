@@ -21,9 +21,9 @@ dt %>%
 
 # Calculate measure -------------------------------------------------------
 
-# dt %>% 
-#   mutate(prop_error = round((FORECAST_SALE_AMT - SALE_AMT)/FORECAST_SALE_AMT*100, digits = 3),
-#          SKU_error = FORECAST_SALE_AMT - SALE_AMT) %>% 
-#   select(LOCATION_CODE, PRODUCT_NAME, FORECAST_SALE_AMT, SALE_AMT, 
-#          prop_error, SKU_error,
-#          MAT_CODE, REQ_DATE, START_DATE, END_DATE) -> dt
+dt %>%
+  mutate(prop_error = round((FORECAST_SALE_AMT - SALE_AMT)/FORECAST_SALE_AMT*100, digits = 3),
+         SKU_error = FORECAST_SALE_AMT - SALE_AMT) %>%
+  select(LOCATION_CODE, PRODUCT_NAME, COLOR, FORECAST_SALE_AMT, SALE_AMT,
+         prop_error, SKU_error,
+         REQ_DATE, START_DATE, END_DATE) -> dt_bau
