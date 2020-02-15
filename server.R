@@ -176,12 +176,12 @@ shinyServer(function(input, output) {
     
     valueBox(
       round(M_acc, digits = 3), 
-      "Mean % Error",
+      "Mean % Error by Model",
       color = "red", icon = icon("check-circle")
     )
   })
   
-  output$Mean_err <- renderValueBox({
+  output$prop_fil <- renderValueBox({
     
     n_base <- nrow(model_input())
     prop_acc <- nrow(user_input())
@@ -191,6 +191,31 @@ shinyServer(function(input, output) {
       "% of group",
       color = "green", icon = icon("percent")
     )
+  })
+  
+  output$Mean_total_acc <- renderValueBox({
+    
+    tmp <- user_input()
+    sum_sale <- sum(tmp$SALE_AMT)
+    bau_sum <- sum(tmp$FORECAST_SALE_AMT)
+    new_sum <- sum(tmp$qpois_lambda)
+    
+    if (input$bau_switch == T) {
+      
+      M_total_acc <- (new_sum - sum_sale)/new_sum
+      
+    } else {
+      
+      M_total_acc <- (bau_sum - sum_sale)/bau_sum
+      
+    }
+    
+    valueBox(
+      round(M_total_acc*100, digits = 3),
+      "Mean % Error by Total",
+      color = "red", icon = icon("check-circle")
+    )
+    
   })
   
 # Download button ---------------------------------------------------------

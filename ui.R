@@ -73,16 +73,17 @@ shinyUI(
                     column(width = 2,
                            valueBoxOutput(outputId = "no_record", width = NULL),
                            valueBoxOutput(outputId = "Mean_acc", width = NULL), 
-                           valueBoxOutput(outputId = "Mean_err", width = NULL)),
+                           valueBoxOutput(outputId = "Mean_total_acc", width = NULL), 
+                           valueBoxOutput(outputId = "prop_fil", width = NULL)),
                     
                     # Histogram
                     column(width = 5,
                            box(title = "% Error Histogram", solidHeader = T, status = "danger", width = NULL,
-                               plotOutput("his_acc", height = 300))), 
+                               plotOutput("his_acc", height = 405))), 
 
                     column(width = 5,
                            box(title = "SKU Error Histogram", solidHeader = T, status = "danger", width = NULL,
-                               plotOutput("his_res", height = 300)))
+                               plotOutput("his_res", height = 405)))
                   ),
                   
                   fluidRow(
