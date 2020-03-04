@@ -27,7 +27,7 @@ shinyServer(function(input, output) {
   })
   
   
-# Choosing between full range or buffer -----------------------------------
+# Choosing between bau or new experiment -----------------------------------
   fil_pois <- reactive({
     
     if (input$bau_switch == T) {
@@ -51,21 +51,12 @@ shinyServer(function(input, output) {
   })
 
 # Minimum Forecast filtering ----------------------------------------------
-
+  
   min_fil <- reactive({
-    
-    if (input$bau_switch == T) {
-      
-      fil_pois() %>% 
-        filter(qpois_lambda >= input$fil_min)
-      
-    }else {
-     
-      fil_pois() %>% 
-        filter(FORECAST_SALE_AMT >= input$fil_min)
-       
-    }
-    
+
+      fil_pois() %>%
+        filter(SALE_AMT >= input$fil_min)
+
   })
 
 # Date Filtering ----------------------------------------------------------
@@ -104,14 +95,12 @@ shinyServer(function(input, output) {
     } else if(input$fil_sel == "Under forecast") {
       
       model_input() %>% 
-        filter(prop_error < -40) %>% 
-        arrange(prop_error)
+        filter(prop_error < -40)
       
     } else if(input$fil_sel == "Over forecast") {
       
       model_input() %>% 
-        filter(prop_error > 40) %>% 
-        arrange(desc(prop_error))
+        filter(prop_error > 40) 
       
     } 
     
@@ -172,6 +161,9 @@ shinyServer(function(input, output) {
   output$Mean_acc <- renderValueBox({
     
     tmp <- user_input()
+    tmp %>% 
+      filter(is.finite(prop_error)) -> tmp
+    
     M_acc <- mean(tmp$prop_error)
     
     valueBox(
