@@ -1,12 +1,4 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
-
+# UI for main shiny apps
 
 # Define available period -------------------------------------------------
 
@@ -31,13 +23,6 @@ shinyUI(
                   dateRangeInput(inputId = "date_fil", label = h3("Forecast Range"), 
                               start = start_list, end = end_list, 
                               min = start_list, max = end_list), 
-                  
-                  materialSwitch(
-                    inputId = "full_switch",
-                    label = "Full Range", 
-                    status = "success",
-                    right = TRUE
-                  ),
                   
                   sliderInput("fil_min", label = h3("Min. Exclude"), min = 1, 
                               max = 10, value = 3),
@@ -70,16 +55,17 @@ shinyUI(
                     column(width = 2,
                            valueBoxOutput(outputId = "no_record", width = NULL),
                            valueBoxOutput(outputId = "Mean_acc", width = NULL), 
-                           valueBoxOutput(outputId = "Mean_err", width = NULL)),
+                           valueBoxOutput(outputId = "Mean_total_acc", width = NULL), 
+                           valueBoxOutput(outputId = "prop_fil", width = NULL)),
                     
                     # Histogram
                     column(width = 5,
                            box(title = "% Error Histogram", solidHeader = T, status = "danger", width = NULL,
-                               plotOutput("his_acc", height = 300))), 
-
+                               plotOutput("his_acc", height = 405))), 
+                    
                     column(width = 5,
-                           box(title = "Residuals Histogram", solidHeader = T, status = "danger", width = NULL,
-                               plotOutput("his_res", height = 300)))
+                           box(title = "SKU Error Histogram", solidHeader = T, status = "danger", width = NULL,
+                               plotOutput("his_res", height = 405)))
                   ),
                   
                   fluidRow(
