@@ -32,7 +32,7 @@ shinyServer(function(input, output) {
   min_fil <- reactive({
     
     dt_full %>% 
-      filter(FORECAST_SALE_AMT >= input$fil_min)
+      filter(SALE_AMT >= input$fil_min)
     
   })
 
@@ -67,19 +67,17 @@ shinyServer(function(input, output) {
     } else if(input$fil_sel == "Proper forecast") {
       
       model_input() %>% 
-        filter(prop_error >= -20, prop_error <= 20)
+        filter(prop_error >= -40, prop_error <= 40)
       
     } else if(input$fil_sel == "Under forecast") {
       
       model_input() %>% 
-        filter(prop_error < -20) %>% 
-        arrange(prop_error)
+        filter(prop_error < -40)
       
     } else if(input$fil_sel == "Over forecast") {
       
       model_input() %>% 
-        filter(prop_error > 20) %>% 
-        arrange(desc(prop_error))
+        filter(prop_error > 40)
       
     } 
     
