@@ -13,12 +13,15 @@ menu_fil <- read_csv("filter_list.csv")
 dt <- read_csv("input/latest3m_report.csv")
 
 dt %>% 
-  filter(STOCK_ON_HAND_AMT > 0, SALE_AMT > 0) %>% 
+  filter(STOCK_ON_HAND_AMT > 0, SALE_AMT > 0) %>%
   mutate(REQ_DATE = mdy(REQ_DATE),
          START_DATE = mdy(START_DATE), 
-         END_DATE = mdy(END_DATE), 
+         END_DATE = mdy(END_DATE),
+         LUNCH_DATE = mdy(LUNCH_DATE),
+         HS_age = ceiling(as.numeric(REQ_DATE - LUNCH_DATE)/7),
          SALE_AMT = ifelse(is.na(SALE_AMT),0,SALE_AMT), 
-         LOCATION_CODE = as.character(LOCATION_CODE))  -> dt
+         LOCATION_CODE = as.character(LOCATION_CODE)) %>% 
+  filter(HS_age > 8) -> dt
 
 dt %>% 
   mutate(prop_error = round((FORECAST_SALE_AMT - SALE_AMT)/FORECAST_SALE_AMT*100, digits = 3),
